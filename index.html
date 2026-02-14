@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>BACCARAT AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<style>
+:root{
+ --p-color:#2196f3;
+ --b-color:#e53935;
+ --t-color:#4caf50;
+ --bg-dark:rgba(10,15,30,.95);
+ --neon-blue:#0ff;
+}
+
+body{
+ margin:0;
+ font-family:Segoe UI,Tahoma;
+ overflow:hidden;
+}
+
+/* ===== GAME FRAME ===== */
+#game-frame{
+ position:fixed;
+ top:0;
+ left:0;
+ width:100%;
+ height:100%;
+ border:none;
+ z-index:1;
+}
+
+/* ===== BUBBLE ===== */
+#ana-bubble{
+ position:fixed;
+ bottom:30px;
+ right:30px;
+ z-index:9999;
+ width:70px;
+ height:70px;
+ border-radius:50%;
+ background:radial-gradient(circle,#00f2fe,#4facfe);
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ color:#fff;
+ font-weight:bold;
+ cursor:pointer;
+ box-shadow:0 0 20px var(--neon-blue);
+ animation:pulse 2s infinite;
+ font-size:14px;
+}
+
+@keyframes pulse{
+ 0%{transform:scale(1)}
+ 50%{transform:scale(1.1)}
+ 100%{transform:scale(1)}
+}
+
+/* ===== AI PANEL ===== */
+#ai-container{
+ display:none;
+ position:fixed;
+ bottom:110px;
+ right:20px;
+ width:360px;
+ background:var(--bg-dark);
+ border:2px solid var(--neon-blue);
+ border-radius:20px;
+ padding:15px;
+ z-index:10000;
+ color:var(--neon-blue);
+ backdrop-filter:blur(15px);
+}
+
+/* ===== DISPLAY ===== */
+.display-section{
+ text-align:center;
+ background:rgba(0,0,0,.3);
+ border-radius:15px;
+ padding:10px;
+ margin-bottom:15px;
+}
+
+#predict-val{
+ font-size:26px;
+ font-weight:900;
+ margin:5px 0;
+}
+
+#circle-box{
+ width:60px;
+ height:60px;
+ border-radius:50%;
+ border:4px solid var(--neon-blue);
+ margin:10px auto;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-size:24px;
+ font-weight:bold;
+}
+
+/* ===== BOARD ===== */
+.board{
+ display:grid;
+ grid-template-columns:repeat(12,1fr);
+ gap:4px;
+ background:#000;
+ padding:8px;
+ border-radius:10px;
+ aspect-ratio:12/6;
+ margin-bottom:15px;
+}
+
+.cell{
+ aspect-ratio:1/1;
+ border-radius:50%;
+ background:#222;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-size:11px;
+ color:#fff;
+}
+
+.P{background:var(--p-color)}
+.B{background:var(--b-color)}
+.T{background:var(--t-color)}
+
+/* ===== BUTTON ===== */
+.row{display:flex;gap:8px;margin-bottom:8px}
+
+button{
+ flex:1;
+ height:50px;
+ border:none;
+ border-radius:12px;
+ color:#fff;
+ font-weight:bold;
+ cursor:pointer;
+}
+
+.btn-p{background:var(--p-color)}
+.btn-b{background:var(--b-color)}
+.btn-t{background:var(--t-color)}
+.btn-ana{background:#ff9800;flex:2}
+.btn-reset{background:#555}
+
+/* ===== HEATMAP ===== */
+.heatmap-wrap{
+ height:12px;
+ background:#222;
+ border-radius:6px;
+ overflow:hidden;
+ display:flex;
+ margin-top:10px;
+}
+
+#hP{background:var(--p-color);width:50%}
+#hB{background:var(--b-color);width:50%}
+</style>
+</head>
+
+<body>
+
+<!-- ===== AUTO OPEN GAME ===== -->
+<iframe
+ id="game-frame"
+ src="https://www.nk88.day/m/home?affiliateCode=daily1">
+</iframe>
+
+<!-- ===== TOOL BUBBLE ===== -->
+<div id="ana-bubble" onclick="toggleMenu()">TOOL AI</div>
+
+<!-- ===== AI TOOL ===== -->
+<div id="ai-container">
+
+<div class="display-section">
+ <div id="predict-val">STANDBY...</div>
+ <div id="circle-box">?</div>
+ <div id="stats" style="font-size:11px;color:#88f">
+  DATA: 0/50 | CHỜ NHẬP LIỆU
+ </div>
+</div>
+
+<div class="board" id="board"></div>
+
+<div class="row">
+ <button class="btn-p" onclick="add('P')">PLAYER</button>
+ <button class="btn-b" onclick="add('B')">BANKER</button>
+ <button class="btn-t" onclick="add('T')">TIE</button>
+</div>
+
+<div class="row">
+ <button class="btn-ana" onclick="runAI()">⚡ DỰ ĐOÁN</button>
+ <button class="btn-reset" onclick="reset()">RESET</button>
+</div>
+
+<div class="heatmap-wrap">
+ <div id="hP"></div>
+ <div id="hB"></div>
+</div>
+
+</div>
+
+<script>
+/* ===== AI CORE GỐC 100% ===== */
+
+const COLS=12,ROWS=6;
+let grid=Array.from({length:ROWS},()=>Array(COLS).fill(null));
+let history=[];
+let col=0,row=0,last=null;
+
+function toggleMenu(){
+ const ui=document.getElementById('ai-container');
+ ui.style.display=ui.style.display==='block'?'none':'block';
+}
+
+function initBoard(){
+ const board=document.getElementById("board");
+ for(let r=0;r<ROWS;r++){
+  for(let c=0;c<COLS;c++){
+   let cell=document.createElement("div");
+   cell.className="cell";
+   cell.id=`c-${r}-${c}`;
+   board.appendChild(cell);
+  }
+ }
+}
+
+function render(){
+ for(let r=0;r<ROWS;r++){
+  for(let c=0;c<COLS;c++){
+   let el=document.getElementById(`c-${r}-${c}`);
+   el.className="cell"+(grid[r][c]?" "+grid[r][c]:"");
+   el.innerText=grid[r][c]||"";
+  }
+ }
+ document.getElementById("stats").innerText=
+ `DATA: ${history.length}/50 | HỆ THỐNG SẴN SÀNG`;
+}
+
+function add(val){
+
+ if(history.length>=50)history.shift();
+ history.push(val);
+
+ if(last!==null){
+  if(val===last&&val!=='T'){
+   if(row<ROWS-1)row++;
+   else{col++;row=ROWS-1;}
+  }else{
+   col++;row=0;
+  }
+ }
+
+ if(col>=COLS){
+  shiftGrid();
+  col=COLS-1;
+ }
+
+ grid[row][col]=val;
+ last=val;
+ render();
+}
+
+function shiftGrid(){
+ for(let r=0;r<ROWS;r++){
+  grid[r].shift();
+  grid[r].push(null);
+ }
+}
+
+function reset(){
+ grid=Array.from({length:ROWS},()=>Array(COLS).fill(null));
+ history=[];col=0;row=0;last=null;
+ document.getElementById("predict-val").innerText="STANDBY...";
+ document.getElementById("circle-box").innerText="?";
+ render();
+}
+
+/* ===== AI ALGORITHM ===== */
+
+function runAI(){
+
+ if(history.length<5){
+  alert("Vui lòng nhập ít nhất 5 tay!");
+  return;
+ }
+
+ let mP=0,mB=0;
+ let lastOne=history.at(-1);
+
+ for(let i=0;i<history.length-1;i++){
+  if(history[i]===lastOne){
+   if(history[i+1]==='P')mP+=1.5;
+   if(history[i+1]==='B')mB+=1.5;
+  }
+ }
+
+ let pP=0,pB=0;
+ if(history.length>=3){
+  let pattern=history.slice(-3).join("");
+  for(let i=0;i<history.length-3;i++){
+   if(history.slice(i,i+3).join("")===pattern){
+    let next=history[i+3];
+    if(next==='P')pP+=2.5;
+    if(next==='B')pB+=2.5;
+   }
+  }
+ }
+
+ let tP=0,tB=0;
+ let recent=history.slice(-12);
+ let countP=recent.filter(x=>x==='P').length;
+ let countB=recent.filter(x=>x==='B').length;
+
+ tP=countP>countB?1.2:0.8;
+ tB=countB>countP?1.2:0.8;
+
+ let bP=0,bB=0;
+ let streak=0;
+
+ for(let i=history.length-1;i>=0;i--){
+  if(history[i]===lastOne)streak++;
+  else break;
+ }
+
+ if(streak>=4){
+  if(lastOne==='P')bB+=streak*0.8;
+  else bP+=streak*0.8;
+ }
+
+ let finalP=mP+pP+tP+bP;
+ let finalB=mB+pB+tB+bB;
+
+ let decision=finalP>finalB?'P':'B';
+ let confidence=Math.round(
+  Math.max(finalP,finalB)/(finalP+finalB)*100
+ );
+
+ document.getElementById("predict-val").innerText=
+ (decision==='P'?'PLAYER ':'BANKER ')
+ +confidence+"%";
+
+ document.getElementById("circle-box").innerText=decision;
+ document.getElementById("circle-box").style.background=
+ decision==='P'?'#2196f3':'#e53935';
+
+ document.getElementById("hP").style.width=
+ (finalP/(finalP+finalB)*100)+"%";
+
+ document.getElementById("hB").style.width=
+ (finalB/(finalP+finalB)*100)+"%";
+}
+
+initBoard();
+render();
+</script>
+
+</body>
+</html>
