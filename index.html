@@ -2,118 +2,86 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>BACCARAT AI</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
+<title>BACCARAT AI MODEL PRO 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 :root{
- --p-color:#2196f3;
- --b-color:#e53935;
- --t-color:#4caf50;
- --bg-dark:rgba(10,15,30,.95);
- --neon-blue:#0ff;
+ --p:#2196f3;
+ --b:#e53935;
+ --t:#4caf50;
+ --bg:rgba(10,15,30,.96);
+ --neon:#00ffff;
 }
+body{margin:0;font-family:Segoe UI;background:#000;overflow:hidden}
 
-body{
- margin:0;
- font-family:Segoe UI,Tahoma;
- overflow:hidden;
-}
-
-/* ===== GAME FRAME ===== */
+/* GAME */
 #game-frame{
  position:fixed;
- top:0;
- left:0;
+ inset:0;
  width:100%;
  height:100%;
  border:none;
  z-index:1;
 }
 
-/* ===== BUBBLE ===== */
-#ana-bubble{
+/* BUBBLE */
+#bubble{
  position:fixed;
- bottom:30px;
- right:30px;
- z-index:9999;
- width:70px;
- height:70px;
+ bottom:20px;right:20px;
+ width:60px;height:60px;
  border-radius:50%;
  background:radial-gradient(circle,#00f2fe,#4facfe);
- display:flex;
- align-items:center;
- justify-content:center;
- color:#fff;
- font-weight:bold;
- cursor:pointer;
- box-shadow:0 0 20px var(--neon-blue);
- animation:pulse 2s infinite;
- font-size:14px;
+ display:flex;align-items:center;justify-content:center;
+ font-weight:bold;cursor:pointer;color:#fff;
+ box-shadow:0 0 15px #0ff;
+ z-index:9999;
 }
 
-@keyframes pulse{
- 0%{transform:scale(1)}
- 50%{transform:scale(1.1)}
- 100%{transform:scale(1)}
-}
-
-/* ===== AI PANEL ===== */
-#ai-container{
+/* PANEL */
+#panel{
  display:none;
  position:fixed;
- bottom:110px;
- right:20px;
- width:360px;
- background:var(--bg-dark);
- border:2px solid var(--neon-blue);
- border-radius:20px;
- padding:15px;
- z-index:10000;
- color:var(--neon-blue);
+ bottom:90px;right:15px;
+ width:380px;
+ background:var(--bg);
+ border:2px solid var(--neon);
+ border-radius:18px;
+ padding:12px;
  backdrop-filter:blur(15px);
+ z-index:10000;
+ color:#fff;
 }
 
-/* ===== DISPLAY ===== */
-.display-section{
- text-align:center;
- background:rgba(0,0,0,.3);
- border-radius:15px;
- padding:10px;
- margin-bottom:15px;
+.display{text-align:center}
+#predict{font-size:20px;font-weight:900}
+#circle{
+ width:55px;height:55px;border-radius:50%;
+ border:3px solid var(--neon);
+ margin:6px auto;
+ display:flex;align-items:center;justify-content:center;
+ font-size:18px;font-weight:bold;
 }
 
-#predict-val{
- font-size:26px;
- font-weight:900;
- margin:5px 0;
-}
+.stat{font-size:11px;margin-top:4px}
 
-#circle-box{
- width:60px;
- height:60px;
- border-radius:50%;
- border:4px solid var(--neon-blue);
- margin:10px auto;
- display:flex;
- align-items:center;
- justify-content:center;
- font-size:24px;
- font-weight:bold;
+/* EFFECT */
+@keyframes flash{
+ 0%{transform:scale(1)}
+ 50%{transform:scale(1.3)}
+ 100%{transform:scale(1)}
 }
+.flash{animation:flash .4s ease-in-out 3}
 
-/* ===== BOARD ===== */
+/* BOARD */
 .board{
  display:grid;
  grid-template-columns:repeat(12,1fr);
- gap:4px;
+ gap:3px;
  background:#000;
- padding:8px;
- border-radius:10px;
- aspect-ratio:12/6;
- margin-bottom:15px;
+ padding:6px;
+ border-radius:8px;
+ margin:5px 0;
 }
-
 .cell{
  aspect-ratio:1/1;
  border-radius:50%;
@@ -121,84 +89,59 @@ body{
  display:flex;
  align-items:center;
  justify-content:center;
- font-size:11px;
- color:#fff;
+ font-size:9px;
 }
+.P{background:var(--p)}
+.B{background:var(--b)}
+.T{background:var(--t)}
 
-.P{background:var(--p-color)}
-.B{background:var(--b-color)}
-.T{background:var(--t-color)}
-
-/* ===== BUTTON ===== */
-.row{display:flex;gap:8px;margin-bottom:8px}
-
+.row{display:flex;gap:5px;margin-bottom:5px}
 button{
- flex:1;
- height:50px;
- border:none;
- border-radius:12px;
- color:#fff;
- font-weight:bold;
- cursor:pointer;
+ flex:1;height:32px;border:none;border-radius:6px;
+ font-size:11px;font-weight:bold;color:#fff;cursor:pointer
 }
-
-.btn-p{background:var(--p-color)}
-.btn-b{background:var(--b-color)}
-.btn-t{background:var(--t-color)}
-.btn-ana{background:#ff9800;flex:2}
+.btn-p{background:var(--p)}
+.btn-b{background:var(--b)}
+.btn-t{background:var(--t)}
+.btn-run{background:#ff9800}
+.btn-del{background:#9c27b0}
 .btn-reset{background:#555}
 
-/* ===== HEATMAP ===== */
-.heatmap-wrap{
- height:12px;
- background:#222;
- border-radius:6px;
- overflow:hidden;
- display:flex;
- margin-top:10px;
-}
-
-#hP{background:var(--p-color);width:50%}
-#hB{background:var(--b-color);width:50%}
+.heat{height:6px;background:#222;border-radius:6px;display:flex}
+#hP{background:var(--p);width:50%}
+#hB{background:var(--b);width:50%}
 </style>
 </head>
-
 <body>
 
-<!-- ===== AUTO OPEN GAME ===== -->
-<iframe
- id="game-frame"
- src="https://www.nk88.day/m/home?affiliateCode=daily1">
-</iframe>
+<iframe id="game-frame" src="https://www.nk88.day/m/home?affiliateCode=daily1"></iframe>
 
-<!-- ===== TOOL BUBBLE ===== -->
-<div id="ana-bubble" onclick="toggleMenu()">TOOL AI</div>
+<div id="bubble" onclick="toggle()">AI</div>
 
-<!-- ===== AI TOOL ===== -->
-<div id="ai-container">
+<div id="panel">
 
-<div class="display-section">
- <div id="predict-val">STANDBY...</div>
- <div id="circle-box">?</div>
- <div id="stats" style="font-size:11px;color:#88f">
-  DATA: 0/50 | CHỜ NHẬP LIỆU
- </div>
+<div class="display">
+ <div id="predict">STANDBY...</div>
+ <div id="circle">?</div>
+ <div class="stat" id="info"></div>
+ <div class="stat" id="winrate"></div>
 </div>
 
 <div class="board" id="board"></div>
 
 <div class="row">
- <button class="btn-p" onclick="add('P')">PLAYER</button>
- <button class="btn-b" onclick="add('B')">BANKER</button>
- <button class="btn-t" onclick="add('T')">TIE</button>
+ <button class="btn-p" onclick="add('P')">P</button>
+ <button class="btn-b" onclick="add('B')">B</button>
+ <button class="btn-t" onclick="add('T')">T</button>
 </div>
 
 <div class="row">
- <button class="btn-ana" onclick="runAI()">⚡ DỰ ĐOÁN</button>
- <button class="btn-reset" onclick="reset()">RESET</button>
+ <button class="btn-run" onclick="runAI()">DỰ ĐOÁN</button>
+ <button class="btn-del" onclick="deleteLast()">XOÁ</button>
+ <button class="btn-reset" onclick="resetAll()">RESET</button>
 </div>
 
-<div class="heatmap-wrap">
+<div class="heat">
  <div id="hP"></div>
  <div id="hB"></div>
 </div>
@@ -206,159 +149,220 @@ button{
 </div>
 
 <script>
-/* ===== AI CORE GỐC 100% ===== */
+
+/* AI MODEL PRO (Học chuỗi + pattern + xu hướng) */
 
 const COLS=12,ROWS=6;
-let grid=Array.from({length:ROWS},()=>Array(COLS).fill(null));
-let history=[];
-let col=0,row=0,last=null;
 
-function toggleMenu(){
- const ui=document.getElementById('ai-container');
- ui.style.display=ui.style.display==='block'?'none':'block';
+let grid=[];
+let history=[];
+let memory=JSON.parse(localStorage.getItem("memory")||'{"P":1,"B":1}');
+let stats=JSON.parse(localStorage.getItem("stats")||'{"win":0,"total":0}');
+let col=0,row=0,last=null,lastPrediction=null;
+
+/* 50 pattern chuẩn */
+const PATTERNS=[
+"BBBB","PPPP","BPBP","PBPB","BBPP","PPBB","BBPBB","PPBPP",
+"BPPBP","PBBPB","BBPB","PPBP","BPBB","PBPP","BPP","PBB",
+"BBBBP","PPPPB","BPBPB","PBPBP","BBPBP","PPBPB","BPBBP",
+"PBPPB","BBBBPP","PPPPBB","BPBPBP","PBPBPB","BBPPBB","PPBBPP",
+"BBPBBP","PPBPPB","BPPBPB","PBBPBP","BBBBPB","PPPPBP",
+"BPBBPB","PBPPBP","BBPBPP","PPBPBB","BPBPPB","PBPBBP",
+"BBPPBP","PPBBPB","BBBBPBB","PPPPBPP","BPBPBB","PBPBPP"
+];
+
+/* toggle panel */
+function toggle(){
+ panel.style.display=panel.style.display==='block'?'none':'block';
 }
 
-function initBoard(){
- const board=document.getElementById("board");
+/* init board */
+function init(){
+ grid=Array.from({length:ROWS},()=>Array(COLS).fill(null));
+ drawBoard();
+ updateWinrate();
+}
+
+/* draw roadmap */
+function drawBoard(){
+ board.innerHTML="";
  for(let r=0;r<ROWS;r++){
   for(let c=0;c<COLS;c++){
-   let cell=document.createElement("div");
-   cell.className="cell";
-   cell.id=`c-${r}-${c}`;
-   board.appendChild(cell);
-  }
- }
-}
+   let d=document.createElement("div");
+   d.className="cell";
+   d.id=`c-${r}-${c}`;
+   board.appendChild(d);
+}}}
 
+/* update roadmap */
 function render(){
  for(let r=0;r<ROWS;r++){
   for(let c=0;c<COLS;c++){
    let el=document.getElementById(`c-${r}-${c}`);
    el.className="cell"+(grid[r][c]?" "+grid[r][c]:"");
    el.innerText=grid[r][c]||"";
-  }
- }
- document.getElementById("stats").innerText=
- `DATA: ${history.length}/50 | HỆ THỐNG SẴN SÀNG`;
+}}}
+
+/* rebuild after delete */
+
+function rebuild(){
+ grid=Array.from({length:ROWS},()=>Array(COLS).fill(null));
+ col=0;row=0;last=null;
+ history.forEach(v=>place(v,true));
+ updateWinrate();
 }
 
-function add(val){
+/* place value in grid */
 
- if(history.length>=50)history.shift();
- history.push(val);
+function place(v,skip){
+ if(!skip){
+  if(lastPrediction && v!=='T'){
+   stats.total++;
+   if(v===lastPrediction){
+    stats.win++;
+    memory[v]+=0.08;
+   }else{
+    memory[lastPrediction]-=0.04;
+    if(memory[lastPrediction]<0.2) memory[lastPrediction]=0.2;
+   }
+   localStorage.setItem("memory",JSON.stringify(memory));
+   localStorage.setItem("stats",JSON.stringify(stats));
+  }
+  history.push(v);
+  localStorage.setItem("history",JSON.stringify(history));
+ }
 
  if(last!==null){
-  if(val===last&&val!=='T'){
-   if(row<ROWS-1)row++;
+  if(v===last && v!=='T'){
+   if(row<ROWS-1) row++;
    else{col++;row=ROWS-1;}
-  }else{
-   col++;row=0;
-  }
+  } else {col++;row=0;}
  }
 
  if(col>=COLS){
-  shiftGrid();
+  for(let r=0;r<ROWS;r++){
+   grid[r].shift();
+   grid[r].push(null);
+  }
   col=COLS-1;
  }
 
- grid[row][col]=val;
- last=val;
+ grid[row][col]=v;
+ last=v;
  render();
+ updateWinrate();
 }
 
-function shiftGrid(){
- for(let r=0;r<ROWS;r++){
-  grid[r].shift();
-  grid[r].push(null);
+/* add click */
+function add(v){ place(v,false); }
+
+/* delete last */
+function deleteLast(){
+ if(history.length===0) return;
+ history.pop();
+ rebuild();
+}
+
+/* reset all */
+function resetAll(){
+ history=[];
+ memory={P:1,B:1};
+ stats={win:0,total:0};
+ localStorage.clear();
+ rebuild();
+ updateWinrate();
+}
+
+/* update winrate display */
+function updateWinrate(){
+ let rate = stats.total ? ((stats.win/stats.total)*100).toFixed(1) : 0;
+ winrate.innerText="Winrate: "+rate+"% ("+stats.win+"/"+stats.total+")";
+}
+
+/* detect pattern */
+function detectPattern(seq){
+ let s=seq.slice(-10).join('');
+ for(let p of PATTERNS){
+  if(s.includes(p)) return p;
  }
+ return null;
 }
 
-function reset(){
- grid=Array.from({length:ROWS},()=>Array(COLS).fill(null));
- history=[];col=0;row=0;last=null;
- document.getElementById("predict-val").innerText="STANDBY...";
- document.getElementById("circle-box").innerText="?";
- render();
-}
-
-/* ===== AI ALGORITHM ===== */
+/* AI MODEL */
 
 function runAI(){
+ let clean=history.filter(x=>x!=='T');
+ if(clean.length < 6){ alert("CẦN ≥6 KẾT QUẢ"); return; }
 
- if(history.length<5){
-  alert("Vui lòng nhập ít nhất 5 tay!");
-  return;
- }
+ let scoreP=50*memory.P;
+ let scoreB=50*memory.B;
 
- let mP=0,mB=0;
- let lastOne=history.at(-1);
+ /* 1. Simple trend */
+ let pCount=clean.filter(x=>x==='P').length;
+ let bCount=clean.filter(x=>x==='B').length;
+ if(pCount > bCount) scoreP+=3;
+ if(bCount > pCount) scoreB+=3;
 
- for(let i=0;i<history.length-1;i++){
-  if(history[i]===lastOne){
-   if(history[i+1]==='P')mP+=1.5;
-   if(history[i+1]==='B')mB+=1.5;
-  }
- }
-
- let pP=0,pB=0;
- if(history.length>=3){
-  let pattern=history.slice(-3).join("");
-  for(let i=0;i<history.length-3;i++){
-   if(history.slice(i,i+3).join("")===pattern){
-    let next=history[i+3];
-    if(next==='P')pP+=2.5;
-    if(next==='B')pB+=2.5;
-   }
-  }
- }
-
- let tP=0,tB=0;
- let recent=history.slice(-12);
- let countP=recent.filter(x=>x==='P').length;
- let countB=recent.filter(x=>x==='B').length;
-
- tP=countP>countB?1.2:0.8;
- tB=countB>countP?1.2:0.8;
-
- let bP=0,bB=0;
- let streak=0;
-
- for(let i=history.length-1;i>=0;i--){
-  if(history[i]===lastOne)streak++;
+ /* 2. Streak */
+ let streak=1;
+ for(let i=clean.length-2;i>=0;i--){
+  if(clean[i]===clean.at(-1)) streak++;
   else break;
  }
-
- if(streak>=4){
-  if(lastOne==='P')bB+=streak*0.8;
-  else bP+=streak*0.8;
+ if(streak>=3 && streak<=5){
+  clean.at(-1)==='P'?scoreP+=4:scoreB+=4;
+ }
+ if(streak>=6){
+  clean.at(-1)==='P'?scoreB+=6:scoreP+=6;
  }
 
- let finalP=mP+pP+tP+bP;
- let finalB=mB+pB+tB+bB;
+ /* 3. 1-1 pingpong */
+ let ping=true;
+ for(let i=1;i<clean.length;i++){
+  if(clean[i]===clean[i-1]) ping=false;
+ }
+ if(ping){
+  clean.at(-1)==='P'?scoreB+=5:scoreP+=5;
+ }
 
- let decision=finalP>finalB?'P':'B';
- let confidence=Math.round(
-  Math.max(finalP,finalB)/(finalP+finalB)*100
- );
+ /* 4. Pattern */
+ let pat=detectPattern(clean);
+ if(pat){
+  pat.at(-1)==='P'?scoreP+=5:scoreB+=5;
+ }
 
- document.getElementById("predict-val").innerText=
- (decision==='P'?'PLAYER ':'BANKER ')
- +confidence+"%";
+ /* 5. Random small noise */
+ scoreP += Math.random()*2-1;
+ scoreB += Math.random()*2-1;
 
- document.getElementById("circle-box").innerText=decision;
- document.getElementById("circle-box").style.background=
- decision==='P'?'#2196f3':'#e53935';
+ let decision = scoreP>scoreB?'P':'B';
+ lastPrediction = decision;
 
- document.getElementById("hP").style.width=
- (finalP/(finalP+finalB)*100)+"%";
+ let conf = Math.round(Math.max(scoreP,scoreB)/(scoreP+scoreB)*100);
 
- document.getElementById("hB").style.width=
- (finalB/(finalP+finalB)*100)+"%";
+ predict.innerText=(decision==='P'?'PLAYER ':'BANKER ')+conf+"%";
+ circle.innerText=decision;
+ circle.style.background=decision==='P'?'#2196f3':'#e53935';
+
+ predict.classList.remove("flash");
+ void predict.offsetWidth;
+ predict.classList.add("flash");
+
+ hP.style.width=(scoreP/(scoreP+scoreB)*100)+"%";
+ hB.style.width=(scoreB/(scoreP+scoreB)*100)+"%";
+
+ info.innerHTML=
+ "Pattern: "+(pat||"Không rõ")+
+ "<br>Streak: "+streak+
+ "<br>P:"+pCount+" B:"+bCount+
+ "<br>Mem P:"+memory.P.toFixed(2)+
+ " B:"+memory.B.toFixed(2);
 }
 
-initBoard();
-render();
+init();
+
 </script>
 
 </body>
 </html>
+
